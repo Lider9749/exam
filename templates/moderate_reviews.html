@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Модерация рецензий - Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Рецензии на модерацию</h2>
+        
+        {% if reviews.items %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Книга</th>
+                        <th>Пользователь</th>
+                        <th>Дата добавления</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews.items %}
+                    <tr>
+                        <td>{{ review.book.title }}</td>
+                        <td>{{ review.user.last_name }} {{ review.user.first_name }}</td>
+                        <td>{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModal{{ review.id }}">
+                                Рассмотреть
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Модальное окно просмотра рецензии -->
+                    <div class="modal fade" id="reviewModal{{ review.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Рецензия на книгу "{{ review.book.title }}"</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Автор:</strong> {{ review.user.last_name }} {{ review.user.first_name }}</p>
+                                    <p><strong>Дата:</strong> {{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                                    <p><strong>Оценка:</strong> 
+                                        {% if review.rating == 5 %}Отлично
+                                        {% elif review.rating == 4 %}Хорошо
+                                        {% elif review.rating == 3 %}Удовлетворительно
+                                        {% elif review.rating == 2 %}Неудовлетворительно
+                                        {% elif review.rating == 1 %}Плохо
+                                        {% else %}Ужасно{% endif %}
+                                    </p>
+                                    <p><strong>Текст рецензии:</strong></p>
+                                    <div class="review-text">
+                                        {{ review.text|safe }}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{{ url_for('moderate_review', review_id=review.id) }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button type="submit" class="btn btn-danger">Отклонить</button>
+                                    </form>
+                                    <form action="{{ url_for('moderate_review', review_id=review.id) }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" class="btn btn-success">Одобрить</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Пагинация -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if reviews.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('moderate_reviews', page=reviews.prev_num) }}">Предыдущая</a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in reviews.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                    {% if page_num %}
+                        {% if page_num == reviews.page %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('moderate_reviews', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if reviews.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('moderate_reviews', page=reviews.next_num) }}">Следующая</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% else %}
+        <p>Нет рецензий, требующих модерации</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

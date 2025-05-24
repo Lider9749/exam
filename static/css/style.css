@@ -1,0 +1,50 @@
+.book-description {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+}
+
+.card-img-top {
+    height: 300px;
+    object-fit: cover;
+}
+
+.navbar {
+    margin-bottom: 2rem;
+}
+
+.footer {
+    margin-top: 3rem;
+    padding: 1rem 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.EasyMDEContainer {
+    border-radius: 0.25rem;
+}
+
+.EasyMDEContainer .editor-toolbar {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.EasyMDEContainer .CodeMirror {
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.btn-group {
+    gap: 0.5rem;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+} 

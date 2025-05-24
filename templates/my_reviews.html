@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Мои рецензии - Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Мои рецензии</h2>
+    
+    {% if reviews %}
+    <div class="row">
+        {% for review in reviews %}
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ url_for('view_book', book_id=review.book.id) }}">{{ review.book.title }}</a>
+                    </h5>
+                    <h6 class="card-subtitle mb-2">
+                        <span class="badge {% if review.status.name == 'Одобрено' %}bg-success
+                                         {% elif review.status.name == 'Отклонено' %}bg-danger
+                                         {% else %}bg-warning{% endif %}">
+                            {{ review.status.name }}
+                        </span>
+                        <span class="rating-badge rating-{{ review.rating }}">
+                            {% if review.rating == 5 %}Отлично
+                            {% elif review.rating == 4 %}Хорошо
+                            {% elif review.rating == 3 %}Удовлетворительно
+                            {% elif review.rating == 2 %}Неудовлетворительно
+                            {% elif review.rating == 1 %}Плохо
+                            {% else %}Ужасно{% endif %}
+                        </span>
+                    </h6>
+                    <p class="card-text">{{ review.text|safe }}</p>
+                    <p class="card-text"><small class="text-muted">{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        У вас пока нет рецензий.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

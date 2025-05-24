@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика - Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Статистика просмотров</h2>
+    
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="date_from" class="form-label">Дата с</label>
+                    <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.args.get('date_from', '') }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="date_to" class="form-label">Дата по</label>
+                    <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request.args.get('date_to', '') }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Применить</button>
+                    <a href="{{ url_for('statistics') }}" class="btn btn-secondary">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Статистика просмотров -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Просмотры книг</h5>
+            <a href="{{ url_for('export_statistics', date_from=request.args.get('date_from'), date_to=request.args.get('date_to')) }}" class="btn btn-success btn-sm">
+                Экспорт в CSV
+            </a>
+        </div>
+        <div class="card-body">
+            {% if stats.items %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Книга</th>
+                            <th>Количество просмотров</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book, count in stats.items %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('view_book', book_id=book.id) }}">{{ book.title }}</a>
+                            </td>
+                            <td>{{ count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Нет данных для отображения
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Журнал действий -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Журнал действий пользователей</h5>
+            <a href="{{ url_for('export_user_actions') }}" class="btn btn-success btn-sm">
+                Экспорт в CSV
+            </a>
+        </div>
+        <div class="card-body">
+            {% if user_actions.items %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Книга</th>
+                            <th>Дата и время</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit, user, book in user_actions.items %}
+                        <tr>
+                            <td>
+                                {% if user %}
+                                {{ user.last_name }} {{ user.first_name }}
+                                {% else %}
+                                Неаутентифицированный пользователь
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('view_book', book_id=book.id) }}">{{ book.title }}</a>
+                            </td>
+                            <td>{{ visit.visited_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Нет данных для отображения
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

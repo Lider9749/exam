@@ -6,3 +6,4 @@ Werkzeug==3.0.1
 mysql-connector-python==8.2.0
 python-dotenv==1.0.0
 bleach==6.1.0 
+gunicorn
